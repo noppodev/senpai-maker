@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>先輩構文ジェネレーター</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            --card-bg: #ffffff;
+            --primary: #06c755;
+            --primary-hover: #05b34c;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --border-color: #e2e8f0;
+            --radius-lg: 24px;
+            --radius-md: 14px;
+            --shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        h1 {
+            font-size: 20px;
+            color: #1a202c;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .input-section, .output-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            letter-spacing: 0.3px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            resize: none;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+            background: #fafbfc;
+            color: var(--text-main);
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.1);
+        }
+
+        button.convert-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(6, 199, 85, 0.25);
+        }
+
+        button.convert-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(6, 199, 85, 0.3);
+        }
+
+        button.convert-btn:active {
+            transform: translateY(0);
+        }
+
+        button.convert-btn:disabled {
+            background-color: #cbd5e0;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-wrapper {
+            position: relative;
+        }
+
+        .output-box {
+            background: #f8fafc;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            min-height: 90px;
+            font-size: 15px;
+            word-break: break-all;
+            white-space: pre-wrap;
+            color: #2d3748;
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            margin-top: 8px;
+            width: 100%;
+            background: #edf2f7;
+            color: #4a5568;
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #e2e8f0;
+            color: #1a202c;
+        }
+
+        .notice {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            background: #f7fafc;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #cbd5e0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary);"></i> 先輩構文ジェネレーター</h1>
+            <span class="subtitle">AIが部活の先輩のLINEを完全再現</span>
+        </div>
+
+        <div class="input-section">
+            <label for="inputText">先輩に言わせたい内容</label>
+            <textarea id="inputText" placeholder="例: 歴史のワーク忘れたかも"></textarea>
+        </div>
+
+        <button class="convert-btn" id="generateBtn" onclick="generateSeniorAI()">
+            <i class="fa-solid fa-robot"></i> AIに先輩っぽく言わせる！
+        </button>
+
+        <div class="output-section">
+            <label>生成された先輩のLINE</label>
+            <div class="output-box" id="outputBox">ここにAIが生成した先輩のLINEが表示されるよ</div>
+            <button class="copy-btn" id="copyBtn" onclick="copyResult()">
+                <i class="fa-regular fa-copy"></i> コピーする
+            </button>
+        </div>
+
+        <div class="notice">
+            ※ 先輩AIは使用できる量が少なめのため、短時間に何度も連続して実行するとエラーが出る場合があります。少し時間を置いて使ってね！
+        </div>
+    </div>
+
+    <script>
+        async function generateSeniorAI() {
+            const inputVal = document.getElementById('inputText').value.trim();
+            const outputBox = document.getElementById('outputBox');
+            const generateBtn = document.getElementById('generateBtn');
+
+            if (!inputVal) {
+                outputBox.textContent = '文字を入れてね！';
+                return;
+            }
+
+            outputBox.textContent = '先輩AIが考え中…🤔';
+            generateBtn.disabled = true;
+
+            const seniorData = `
+- 勝手に追加しちゃってごめんねт т
+- めっちゃ急なんだけど12月30日から1月2日の間にわかなちゃんとご飯行くんだけど来れたりする⁉️[cite: 1]
+- よかったー！[cite: 1]
+- 時間あるときこの中で都合いい日教えてほしい👍🏻[cite: 1]
+- おっけーです👍🏻[cite: 1]
+- えーまってすごい！！[cite: 1]
+- すごいこれ博多も広島も名古屋も入ってる！！[cite: 1]
+- ちょっと考えとくね方言[cite: 1]
+- 去年は定演後は2.3日あったけど大体オフだったよー‼️[cite: 1]
+- えまって歴史のワークおいてきてる‼️‼️[cite: 1]
+- めっちゃ忘れてたないすありがとう‼️‼️‼️[cite: 1]
+- でも歴史は範囲少ないからわんちゃんいける👍🏻👍🏻[cite: 1]
+- ねねそういえばパートリーダー誰になったのー⁉️[cite: 1]
+- なるほど🌟ありがとーー[cite: 1]
+- えーーそうなんだ‼️[cite: 1]
+- 木管わかったら教えてほしい🙂‍↕️🙂‍↕️[cite: 1]
+- おっけーいありがとうー🌟[cite: 1]
+- チューバパートリーダーがんばってねー👍🏻💫[cite: 1]
+- 塾行ってたごめん💧‬[cite: 3]
+- 8時半集合ー❓[cite: 3]
+- 私も自転車で行く！[cite: 3]
+- 現地集合ー？[cite: 3]
+- さいしょいくとこはマック？[cite: 3]
+- なるほどねん[cite: 3]
+- おっけーい！[cite: 3]
+- 今日遊んでくれてありがとうー‼️[cite: 3]
+- 塾間に合ったよ忙しくさせてごめん💧‬[cite: 3]
+- また今度わかちゃんも一緒に遊ぼうねーー[cite: 3]
+- あと今度数学と歴史教えてください🙏🏻🙏🏻[cite: 3]
+            `;
+
+            const prompt = `以下の「部活の先輩の実際のLINE発言データ」の口調、絵文字の使い方（‼️、⁉️、👍🏻、🌟、🙂‍↕️🙂‍↕️、💫、т т、💧‬、❓、🙏🏻🙏🏻 など）、テンションを完璧に模倣して、「${inputVal}」という内容を先輩のLINEっぽく変換・生成してください。余計な解説は一切含めず、変換後の文章だけを出力して。
+
+【先輩の発言データ】
+${seniorData}`;
+
+            try {
+                // NoppoIntelligence API呼び出し
+                const response = `https://nexus-api.noppo5319.workers.dev` ? await fetch('https://nexus-api.noppo5319.workers.dev', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        agent_mode: false,
+                        stream: false
+                    })
+                }) : null;
+
+                const data = await response.json();
+
+                if (data.status === 'success' && data.response) {
+                    outputBox.textContent = data.response.trim();
+                } else {
+                    outputBox.textContent = 'AIが休憩中だよ！30秒後くらいに試してね！';
+                }
+            } catch (error) {
+                console.error(error);
+                outputBox.textContent = '通信エラーが発生したみたい…！';
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+
+        function copyResult() {
+            const text = document.getElementById('outputBox').textContent;
+            const copyBtn = document.getElementById('copyBtn');
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fa-solid fa-check" style="color: var(--primary);"></i> コピー完了！';
+                copyBtn.style.background = '#e6fffa';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.style.background = '';
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
